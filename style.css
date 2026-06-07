@@ -326,3 +326,74 @@ a {
         flex-direction: column;
     }
 }
+
+/* ============================================
+   THÈME SOMBRE / CLAIR
+   ============================================ */
+
+/* Thème sombre */
+body.dark {
+    background-color: #0f0f1a;
+    color: #e0e0e0;
+}
+
+body.dark .navbar {
+    background-color: #0a0a15;
+}
+
+body.dark .card {
+    background-color: #1a1a2e;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+body.dark .card h2 {
+    color: #e94560;
+}
+
+body.dark .form-group label {
+    color: #ccc;
+}
+
+body.dark .form-group input,
+body.dark .form-group textarea {
+    background-color: #16213e;
+    border-color: #333;
+    color: #e0e0e0;
+}
+
+body.dark .publication-card {
+    background-color: #1a1a2e;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+body.dark .publication-card h3 {
+    color: #e0e0e0;
+}
+
+body.dark .publication-card p {
+    color: #aaa;
+}
+
+body.dark .alert-info {
+    background-color: #0c2a30;
+    color: #7ecfdb;
+    border-color: #0c5460;
+}
+
+/* Bouton toggle thème */
+.theme-toggle {
+    background: none;
+    border: 2px solid #e94560;
+    color: #e94560;
+    padding: 5px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.theme-toggle:hover {
+    background-color: #e94560;
+    color: #fff;
+}

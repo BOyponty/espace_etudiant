@@ -122,6 +122,11 @@ $contenu = trim($_POST['contenu']);
         <li><a href="publications.php">📝 Publications</a></li>
         <li><a href="profil.php">👤 Profil</a></li>
         <li><a href="deconnexion.php">🚪 Déconnexion</a></li>
+        <li>
+            <button class="theme-toggle" id="toggleTheme">
+                🌙 Thème sombre
+            </button>
+        </li>
     </ul>
 </nav>
 
@@ -256,6 +261,40 @@ $contenu = trim($_POST['contenu']);
     </div>
 
 </div>
+<script>
+// ============================================
+//  THÈME SOMBRE / CLAIR — main.js
+//  Basé sur Section IV du cours : DOM + Events
+// ============================================
+
+const toggleBtn = document.getElementById('toggleTheme');
+
+// Récupérer le thème sauvegardé
+// localStorage garde le choix même après rechargement
+const themeSauvegarde = localStorage.getItem('theme');
+
+if (themeSauvegarde === 'dark') {
+    document.body.classList.add('dark');
+    toggleBtn.textContent = '☀️ Thème clair';
+}
+
+// Gestion du clic — addEventListener vu Section IV.4 du cours
+toggleBtn.addEventListener('click', function() {
+
+    // classList.toggle ajoute ou enlève la classe 'dark'
+    document.body.classList.toggle('dark');
+
+    if (document.body.classList.contains('dark')) {
+        // Passer en mode sombre
+        localStorage.setItem('theme', 'dark');
+        toggleBtn.textContent = '☀️ Thème clair';
+    } else {
+        // Passer en mode clair
+        localStorage.setItem('theme', 'light');
+        toggleBtn.textContent = '🌙 Thème sombre';
+    }
+});
+</script>
 
 </body>
 </html>
