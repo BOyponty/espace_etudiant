@@ -17,10 +17,8 @@ try {
     //  CRÉER UNE PUBLICATION
     // ============================================
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['creer_pub'])) {
-
-        $titre   = htmlentities(trim($_POST['titre']));
-        $contenu = htmlentities(trim($_POST['contenu']));
-
+$titre   = trim($_POST['titre']);
+$contenu = trim($_POST['contenu']);
         // Vérification champs vides — empty() cours Section II.2
         if (empty($titre) || empty($contenu)) {
             $erreur = "Le titre et le contenu sont obligatoires.";
