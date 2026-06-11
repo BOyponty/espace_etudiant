@@ -308,7 +308,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['supprimer_compte'])) 
                         background-color:#1a1a2e; display:flex;
                         align-items:center; justify-content:center;
                         margin:0 auto 20px; font-size:3rem;">
-                
+                👤
             </div>
         <?php endif; ?>
 
