@@ -7,8 +7,8 @@ session_start();
 require 'auth_check.php';
 require 'db.php';
 
-$erreur  = '';
-$succes  = '';
+$erreur = '';
+$succes = '';
 
 try {
     $pdo = getConnexion();
@@ -25,15 +25,88 @@ try {
 }
 
 // ============================================
+//  UPLOAD PHOTO DE PROFIL
+// ============================================
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_photo'])) {
+
+    // Vérifier qu'un fichier a bien été envoyé
+    if (isset($_FILES['photo']) && $_FILES['photo']['error'] === 0) {
+
+        $fichier    = $_FILES['photo'];
+        $nom        = $fichier['name'];
+        $taille     = $fichier['size'];
+        $tmp        = $fichier['tmp_name'];
+        $extension  = strtolower(pathinfo($nom, PATHINFO_EXTENSION));
+
+        // Extensions autorisées
+        $extensions_autorisees = ['jpg', 'jpeg', 'png', 'gif'];
+
+        // Taille max : 2 Mo
+        $taille_max = 2 * 1024 * 1024;
+
+        if (!in_array($extension, $extensions_autorisees)) {
+            $erreur = "Format non autorisé. Utilisez JPG, PNG ou GIF.";
+
+        } elseif ($taille > $taille_max) {
+            $erreur = "L'image ne doit pas dépasser 2 Mo.";
+
+        } else {
+
+            // Générer un nom unique pour éviter les conflits
+            $nouveau_nom = 'photo_' . $_SESSION['etudiant_id'] 
+                         . '_' . time() . '.' . $extension;
+
+            $destination = 'uploads/' . $nouveau_nom;
+
+            // Déplacer le fichier dans le dossier uploads/
+            if (move_uploaded_file($tmp, $destination)) {
+
+                try {
+                    $pdo = getConnexion();
+
+                    // Supprimer l'ancienne photo si elle existe
+                    if (!empty($etudiant['photo']) && 
+                        file_exists($etudiant['photo'])) {
+                        unlink($etudiant['photo']);
+                    }
+
+                    // Mettre à jour en base de données
+                    $stmt = $pdo->prepare(
+                        "UPDATE etudiants SET photo = :photo 
+                         WHERE id = :id"
+                    );
+                    $stmt->execute([
+                        'photo' => $destination,
+                        'id'    => $_SESSION['etudiant_id']
+                    ]);
+
+                    // Mettre à jour la variable locale
+                    $etudiant['photo'] = $destination;
+                    $succes = "Photo de profil mise à jour !";
+
+                } catch (PDOException $e) {
+                    $erreur = "Erreur : " . $e->getMessage();
+                }
+
+            } else {
+                $erreur = "Erreur lors de l'upload. Réessayez.";
+            }
+        }
+
+    } else {
+        $erreur = "Veuillez sélectionner une photo.";
+    }
+}
+
+// ============================================
 //  MODIFICATION DU PROFIL
 // ============================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modifier_profil'])) {
 
-    $nom    = htmlentities(trim($_POST['nom']));
-    $prenom = htmlentities(trim($_POST['prenom']));
-    $email  = htmlentities(trim($_POST['email']));
+    $nom    = trim($_POST['nom']);
+    $prenom = trim($_POST['prenom']);
+    $email  = trim($_POST['email']);
 
-    // Vérification champs vides — empty() cours Section II.2
     if (empty($nom) || empty($prenom) || empty($email)) {
         $erreur = "Tous les champs sont obligatoires.";
 
@@ -45,7 +118,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modifier_profil'])) {
         try {
             $pdo = getConnexion();
 
-            // Vérifier si l'email est déjà utilisé par un autre étudiant
             $stmt = $pdo->prepare(
                 "SELECT id FROM etudiants 
                  WHERE email = :email AND id != :id"
@@ -56,11 +128,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modifier_profil'])) {
             ]);
 
             if ($stmt->fetch()) {
-                $erreur = "Cet email est déjà utilisé par un autre étudiant.";
+                $erreur = "Cet email est déjà utilisé.";
 
             } else {
 
-                // Mise à jour — prepare() + execute() Section III.2
                 $stmt = $pdo->prepare(
                     "UPDATE etudiants 
                      SET nom = :nom, prenom = :prenom, email = :email 
@@ -73,16 +144,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modifier_profil'])) {
                     'id'     => $_SESSION['etudiant_id']
                 ]);
 
-                // Mettre à jour la session
                 $_SESSION['etudiant_nom']    = $nom;
                 $_SESSION['etudiant_prenom'] = $prenom;
 
-                $succes = "Profil mis à jour avec succès !";
-
-                // Recharger les infos
                 $etudiant['nom']    = $nom;
                 $etudiant['prenom'] = $prenom;
                 $etudiant['email']  = $email;
+
+                $succes = "Profil mis à jour avec succès !";
             }
 
         } catch (PDOException $e) {
@@ -96,8 +165,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modifier_profil'])) {
 // ============================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modifier_mdp'])) {
 
-    $ancien_mdp  = trim($_POST['ancien_mdp']);
-    $nouveau_mdp = trim($_POST['nouveau_mdp']);
+    $ancien_mdp   = trim($_POST['ancien_mdp']);
+    $nouveau_mdp  = trim($_POST['nouveau_mdp']);
     $confirmation = trim($_POST['confirmation_mdp']);
 
     if (empty($ancien_mdp) || empty($nouveau_mdp) || empty($confirmation)) {
@@ -107,31 +176,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modifier_mdp'])) {
         $erreur = "Les nouveaux mots de passe ne correspondent pas.";
 
     } elseif (strlen($nouveau_mdp) < 6) {
-        $erreur = "Le nouveau mot de passe doit contenir au moins 6 caractères.";
+        $erreur = "Le mot de passe doit contenir au moins 6 caractères.";
 
     } else {
 
         try {
             $pdo = getConnexion();
 
-            // Récupérer le mot de passe actuel
             $stmt = $pdo->prepare(
                 "SELECT mot_de_passe FROM etudiants WHERE id = :id"
             );
             $stmt->execute(['id' => $_SESSION['etudiant_id']]);
             $row = $stmt->fetch();
 
-            // Vérifier l'ancien mot de passe — password_verify()
-            // Section II du cours
             if (!password_verify($ancien_mdp, $row['mot_de_passe'])) {
                 $erreur = "L'ancien mot de passe est incorrect.";
 
             } else {
 
-                // Hasher le nouveau mot de passe — password_hash()
                 $hash = password_hash($nouveau_mdp, PASSWORD_DEFAULT);
 
-                // Mise à jour
                 $stmt = $pdo->prepare(
                     "UPDATE etudiants 
                      SET mot_de_passe = :mot_de_passe 
@@ -166,13 +230,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['supprimer_compte'])) 
         try {
             $pdo = getConnexion();
 
-            // Suppression — ON DELETE CASCADE supprime aussi les publications
+            // Supprimer la photo si elle existe
+            if (!empty($etudiant['photo']) && 
+                file_exists($etudiant['photo'])) {
+                unlink($etudiant['photo']);
+            }
+
             $stmt = $pdo->prepare(
                 "DELETE FROM etudiants WHERE id = :id"
             );
             $stmt->execute(['id' => $_SESSION['etudiant_id']]);
 
-            // Destruction complète de la session
             $_SESSION = [];
             if (isset($_COOKIE[session_name()])) {
                 setcookie(session_name(), '', time() - 3600, '/');
@@ -216,23 +284,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['supprimer_compte'])) 
 
 <div class="container">
 
-    <!-- Affichage messages -->
     <?php if (!empty($erreur)): ?>
-        <div class="alert alert-danger"><?= $erreur ?></div>
+        <div class="alert alert-danger"><?= htmlentities($erreur) ?></div>
     <?php endif; ?>
     <?php if (!empty($succes)): ?>
-        <div class="alert alert-success"><?= $succes ?></div>
+        <div class="alert alert-success"><?= htmlentities($succes) ?></div>
     <?php endif; ?>
+
+    <!-- Photo de profil -->
+    <div class="card" style="text-align:center;">
+        <h2> Photo de Profil</h2>
+
+        <!-- Affichage de la photo -->
+        <?php if (!empty($etudiant['photo']) && 
+                  file_exists($etudiant['photo'])): ?>
+            <img src="<?= htmlentities($etudiant['photo']) ?>"
+                 alt="Photo de profil"
+                 style="width:150px; height:150px; border-radius:50%;
+                        object-fit:cover; border:4px solid #e94560;
+                        margin-bottom:20px;">
+        <?php else: ?>
+            <div style="width:150px; height:150px; border-radius:50%;
+                        background-color:#1a1a2e; display:flex;
+                        align-items:center; justify-content:center;
+                        margin:0 auto 20px; font-size:3rem;">
+                
+            </div>
+        <?php endif; ?>
+
+        <!-- Formulaire upload -->
+        <form method="POST" action="profil.php" 
+              enctype="multipart/form-data">
+            <div class="form-group">
+                <input type="file" name="photo" 
+                       accept=".jpg,.jpeg,.png,.gif"
+                       style="margin-bottom:10px;">
+                <small style="color:#999; display:block;">
+                    Formats acceptés : JPG, PNG, GIF — Max 2 Mo
+                </small>
+            </div>
+            <button type="submit" name="upload_photo" 
+                    class="btn btn-primary">
+                 Mettre à jour la photo
+            </button>
+        </form>
+    </div>
 
     <!-- Infos du profil -->
     <div class="card">
-        <h2>👤 Mon Profil</h2>
+        <h2> Mon Profil</h2>
         <p><strong>Nom :</strong> 
             <?= htmlentities($etudiant['nom']) ?></p>
         <p style="margin-top:8px"><strong>Prénom :</strong> 
             <?= htmlentities($etudiant['prenom']) ?></p>
         <p style="margin-top:8px"><strong>Email :</strong> 
             <?= htmlentities($etudiant['email']) ?></p>
+        <p style="margin-top:8px"><strong>Rôle :</strong> 
+            <?= htmlentities($etudiant['role']) ?></p>
         <p style="margin-top:8px"><strong>Inscrit le :</strong> 
             <?= date('d/m/Y', strtotime($etudiant['date_creation'])) ?></p>
     </div>
@@ -244,19 +352,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['supprimer_compte'])) 
             <div class="form-group">
                 <label>Nom</label>
                 <input type="text" name="nom"
-                       value="<?= htmlentities($etudiant['nom']) ?>" required>
+                       value="<?= htmlentities($etudiant['nom']) ?>" 
+                       required>
             </div>
             <div class="form-group">
                 <label>Prénom</label>
                 <input type="text" name="prenom"
-                       value="<?= htmlentities($etudiant['prenom']) ?>" required>
+                       value="<?= htmlentities($etudiant['prenom']) ?>" 
+                       required>
             </div>
             <div class="form-group">
                 <label>Email</label>
                 <input type="email" name="email"
-                       value="<?= htmlentities($etudiant['email']) ?>" required>
+                       value="<?= htmlentities($etudiant['email']) ?>" 
+                       required>
             </div>
-            <button type="submit" name="modifier_profil" 
+            <button type="submit" name="modifier_profil"
                     class="btn btn-primary">
                 Enregistrer les modifications
             </button>
@@ -269,7 +380,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['supprimer_compte'])) 
         <form method="POST" action="profil.php">
             <div class="form-group">
                 <label>Ancien mot de passe</label>
-                <input type="password" name="ancien_mdp" 
+                <input type="password" name="ancien_mdp"
                        placeholder="Votre mot de passe actuel" required>
             </div>
             <div class="form-group">
@@ -280,9 +391,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['supprimer_compte'])) 
             <div class="form-group">
                 <label>Confirmer le nouveau mot de passe</label>
                 <input type="password" name="confirmation_mdp"
-                       placeholder="Répétez le nouveau mot de passe" required>
+                       placeholder="Répétez le nouveau mot de passe" 
+                       required>
             </div>
-            <button type="submit" name="modifier_mdp" 
+            <button type="submit" name="modifier_mdp"
                     class="btn btn-secondary">
                 Modifier le mot de passe
             </button>
@@ -293,7 +405,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['supprimer_compte'])) 
     <div class="card">
         <h2> Supprimer mon compte</h2>
         <div class="alert alert-danger">
-             Cette action est irréversible. 
+             Cette action est irréversible.
             Toutes vos publications seront supprimées.
         </div>
         <form method="POST" action="profil.php">
@@ -304,7 +416,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['supprimer_compte'])) 
                 <input type="text" name="confirmation_supp"
                        placeholder="SUPPRIMER" required>
             </div>
-            <button type="submit" name="supprimer_compte" 
+            <button type="submit" name="supprimer_compte"
                     class="btn btn-danger">
                 Supprimer définitivement mon compte
             </button>
@@ -314,15 +426,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['supprimer_compte'])) 
 </div>
 
 <script>
-// ============================================
-//  THÈME SOMBRE / CLAIR — main.js
-//  Basé sur Section IV du cours : DOM + Events
-// ============================================
-
 const toggleBtn = document.getElementById('toggleTheme');
-
-// Récupérer le thème sauvegardé
-// localStorage garde le choix même après rechargement
 const themeSauvegarde = localStorage.getItem('theme');
 
 if (themeSauvegarde === 'dark') {
@@ -330,18 +434,12 @@ if (themeSauvegarde === 'dark') {
     toggleBtn.textContent = ' Thème clair';
 }
 
-// Gestion du clic — addEventListener vu Section IV.4 du cours
 toggleBtn.addEventListener('click', function() {
-
-    // classList.toggle ajoute ou enlève la classe 'dark'
     document.body.classList.toggle('dark');
-
     if (document.body.classList.contains('dark')) {
-        // Passer en mode sombre
         localStorage.setItem('theme', 'dark');
         toggleBtn.textContent = ' Thème clair';
     } else {
-        // Passer en mode clair
         localStorage.setItem('theme', 'light');
         toggleBtn.textContent = ' Thème sombre';
     }
