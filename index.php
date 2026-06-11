@@ -59,15 +59,15 @@ try {
 
 <!-- NAVBAR -->
 <nav class="navbar">
-    <div class="logo">🎓 Espace Étudiant</div>
+    <div class="logo"> Espace Étudiant</div>
     <ul>
-        <li><a href="index.php">🏠 Dashboard</a></li>
-        <li><a href="publications.php">📝 Publications</a></li>
-        <li><a href="profil.php">👤 Profil</a></li>
-        <li><a href="deconnexion.php">🚪 Déconnexion</a></li>
+        <li><a href="index.php"> Dashboard</a></li>
+        <li><a href="publications.php"> Publications</a></li>
+        <li><a href="profil.php"> Profil</a></li>
+        <li><a href="deconnexion.php"> Déconnexion</a></li>
         <li>
             <button class="theme-toggle" id="toggleTheme">
-                🌙 Thème sombre
+                 Thème sombre
             </button>
         </li>
     </ul>
@@ -78,7 +78,7 @@ try {
     <!-- Message de bienvenue -->
     <div class="card">
         <h2>
-            👋 Bienvenue, 
+             Bienvenue, 
             <?= htmlentities($_SESSION['etudiant_prenom']) ?> 
             <?= htmlentities($_SESSION['etudiant_nom']) ?> !
         </h2>
@@ -115,7 +115,7 @@ try {
 
     <!-- Dernières publications -->
     <div class="card">
-        <h2>📰 Dernières Publications</h2>
+        <h2> Dernières Publications</h2>
 
         <?php if (empty($dernieres)): ?>
             <div class="alert alert-info">
@@ -126,9 +126,9 @@ try {
                 <div class="publication-card">
 
                     <div class="publication-meta">
-                        👤 <?= htmlentities($pub['prenom']) ?> 
+                         <?= htmlentities($pub['prenom']) ?> 
                            <?= htmlentities($pub['nom']) ?> — 
-                        🕒 <?= date('d/m/Y à H:i', 
+                         <?= date('d/m/Y à H:i', 
                                 strtotime($pub['date_creation'])) ?>
                     </div>
 
@@ -151,13 +151,13 @@ try {
 
     <!-- Accès rapide -->
     <div class="card">
-        <h2>⚡ Accès Rapide</h2>
+        <h2> Accès Rapide</h2>
         <div style="display:flex; gap:15px; flex-wrap:wrap;">
             <a href="publications.php" class="btn btn-primary">
-                📝 Nouvelle publication
+                 Nouvelle publication
             </a>
             <a href="profil.php" class="btn btn-secondary">
-                👤 Mon profil
+                 Mon profil
             </a>
         </div>
     </div>
@@ -178,7 +178,7 @@ const themeSauvegarde = localStorage.getItem('theme');
 
 if (themeSauvegarde === 'dark') {
     document.body.classList.add('dark');
-    toggleBtn.textContent = '☀️ Thème clair';
+    toggleBtn.textContent = ' Thème clair';
 }
 
 // Gestion du clic — addEventListener vu Section IV.4 du cours
@@ -190,11 +190,11 @@ toggleBtn.addEventListener('click', function() {
     if (document.body.classList.contains('dark')) {
         // Passer en mode sombre
         localStorage.setItem('theme', 'dark');
-        toggleBtn.textContent = '☀️ Thème clair';
+        toggleBtn.textContent = ' Thème clair';
     } else {
         // Passer en mode clair
         localStorage.setItem('theme', 'light');
-        toggleBtn.textContent = '🌙 Thème sombre';
+        toggleBtn.textContent = ' Thème sombre';
     }
 });
 </script>

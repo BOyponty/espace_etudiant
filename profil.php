@@ -200,15 +200,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['supprimer_compte'])) 
 
 <!-- NAVBAR -->
 <nav class="navbar">
-    <div class="logo">🎓 Espace Étudiant</div>
+    <div class="logo"> Espace Étudiant</div>
     <ul>
-        <li><a href="index.php">🏠 Dashboard</a></li>
-        <li><a href="publications.php">📝 Publications</a></li>
-        <li><a href="profil.php">👤 Profil</a></li>
-        <li><a href="deconnexion.php">🚪 Déconnexion</a></li>
+        <li><a href="index.php"> Dashboard</a></li>
+        <li><a href="publications.php"> Publications</a></li>
+        <li><a href="profil.php"> Profil</a></li>
+        <li><a href="deconnexion.php"> Déconnexion</a></li>
         <li>
             <button class="theme-toggle" id="toggleTheme">
-                🌙 Thème sombre
+                 Thème sombre
             </button>
         </li>
     </ul>
@@ -239,7 +239,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['supprimer_compte'])) 
 
     <!-- Modifier le profil -->
     <div class="card">
-        <h2>✏️ Modifier mes informations</h2>
+        <h2> Modifier mes informations</h2>
         <form method="POST" action="profil.php">
             <div class="form-group">
                 <label>Nom</label>
@@ -265,7 +265,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['supprimer_compte'])) 
 
     <!-- Modifier le mot de passe -->
     <div class="card">
-        <h2>🔒 Modifier mon mot de passe</h2>
+        <h2> Modifier mon mot de passe</h2>
         <form method="POST" action="profil.php">
             <div class="form-group">
                 <label>Ancien mot de passe</label>
@@ -291,9 +291,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['supprimer_compte'])) 
 
     <!-- Supprimer le compte -->
     <div class="card">
-        <h2>🗑️ Supprimer mon compte</h2>
+        <h2> Supprimer mon compte</h2>
         <div class="alert alert-danger">
-            ⚠️ Cette action est irréversible. 
+             Cette action est irréversible. 
             Toutes vos publications seront supprimées.
         </div>
         <form method="POST" action="profil.php">
@@ -327,7 +327,7 @@ const themeSauvegarde = localStorage.getItem('theme');
 
 if (themeSauvegarde === 'dark') {
     document.body.classList.add('dark');
-    toggleBtn.textContent = '☀️ Thème clair';
+    toggleBtn.textContent = ' Thème clair';
 }
 
 // Gestion du clic — addEventListener vu Section IV.4 du cours
@@ -339,11 +339,11 @@ toggleBtn.addEventListener('click', function() {
     if (document.body.classList.contains('dark')) {
         // Passer en mode sombre
         localStorage.setItem('theme', 'dark');
-        toggleBtn.textContent = '☀️ Thème clair';
+        toggleBtn.textContent = ' Thème clair';
     } else {
         // Passer en mode clair
         localStorage.setItem('theme', 'light');
-        toggleBtn.textContent = '🌙 Thème sombre';
+        toggleBtn.textContent = ' Thème sombre';
     }
 });
 </script>

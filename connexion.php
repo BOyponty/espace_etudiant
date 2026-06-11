@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="auth-container">
     <div class="card">
-        <h1>🎓 Espace Étudiant</h1>
+        <h1> Espace Étudiant</h1>
         <p class="subtitle">Connectez-vous à votre compte</p>
 
         <!-- Affichage erreur -->

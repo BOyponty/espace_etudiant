@@ -116,15 +116,15 @@ $contenu = trim($_POST['contenu']);
 
 <!-- NAVBAR -->
 <nav class="navbar">
-    <div class="logo">🎓 Espace Étudiant</div>
+    <div class="logo"> Espace Étudiant</div>
     <ul>
-        <li><a href="index.php">🏠 Dashboard</a></li>
-        <li><a href="publications.php">📝 Publications</a></li>
-        <li><a href="profil.php">👤 Profil</a></li>
-        <li><a href="deconnexion.php">🚪 Déconnexion</a></li>
+        <li><a href="index.php"> Dashboard</a></li>
+        <li><a href="publications.php"> Publications</a></li>
+        <li><a href="profil.php"> Profil</a></li>
+        <li><a href="deconnexion.php"> Déconnexion</a></li>
         <li>
             <button class="theme-toggle" id="toggleTheme">
-                🌙 Thème sombre
+                 Thème sombre
             </button>
         </li>
     </ul>
@@ -142,7 +142,7 @@ $contenu = trim($_POST['contenu']);
 
     <!-- Formulaire création publication -->
     <div class="card">
-        <h2>✏️ Nouvelle Publication</h2>
+        <h2> Nouvelle Publication</h2>
         <form method="POST" action="publications.php">
             <div class="form-group">
                 <label>Titre</label>
@@ -164,7 +164,7 @@ $contenu = trim($_POST['contenu']);
 
     <!-- Barre de recherche -->
     <div class="card">
-        <h2>🔍 Rechercher une publication</h2>
+        <h2> Rechercher une publication</h2>
         <form method="GET" action="publications.php">
             <div style="display:flex; gap:10px;">
                 <input type="text" name="recherche"
@@ -187,7 +187,7 @@ $contenu = trim($_POST['contenu']);
 
     <!-- Liste des publications -->
     <div class="card">
-        <h2>📰 Toutes les Publications 
+        <h2> Toutes les Publications 
             <span style="font-size:0.85rem; color:#999;">
                 (<?= $total_pubs ?> au total)
             </span>
@@ -206,9 +206,9 @@ $contenu = trim($_POST['contenu']);
 
                     <!-- Auteur et date -->
                     <div class="publication-meta">
-                        👤 <?= htmlentities($pub['prenom']) ?> 
+                         <?= htmlentities($pub['prenom']) ?> 
                            <?= htmlentities($pub['nom']) ?> —
-                        🕒 <?= date('d/m/Y à H:i', 
+                         <?= date('d/m/Y à H:i', 
                                 strtotime($pub['date_creation'])) ?>
                     </div>
 
@@ -223,12 +223,12 @@ $contenu = trim($_POST['contenu']);
                         <div class="publication-actions">
                             <a href="edit_publication.php?id=<?= $pub['id'] ?>"
                                class="btn btn-warning btn-sm">
-                                ✏️ Modifier
+                                 Modifier
                             </a>
                             <a href="delete_publication.php?id=<?= $pub['id'] ?>"
                                class="btn btn-danger btn-sm"
                                onclick="return confirm('Confirmer la suppression ?')">
-                                🗑️ Supprimer
+                                 Supprimer
                             </a>
                         </div>
                     <?php endif; ?>
@@ -275,7 +275,7 @@ const themeSauvegarde = localStorage.getItem('theme');
 
 if (themeSauvegarde === 'dark') {
     document.body.classList.add('dark');
-    toggleBtn.textContent = '☀️ Thème clair';
+    toggleBtn.textContent = ' Thème clair';
 }
 
 // Gestion du clic — addEventListener vu Section IV.4 du cours
@@ -287,11 +287,11 @@ toggleBtn.addEventListener('click', function() {
     if (document.body.classList.contains('dark')) {
         // Passer en mode sombre
         localStorage.setItem('theme', 'dark');
-        toggleBtn.textContent = '☀️ Thème clair';
+        toggleBtn.textContent = ' Thème clair';
     } else {
         // Passer en mode clair
         localStorage.setItem('theme', 'light');
-        toggleBtn.textContent = '🌙 Thème sombre';
+        toggleBtn.textContent = ' Thème sombre';
     }
 });
 </script>

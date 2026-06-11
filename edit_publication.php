@@ -93,15 +93,15 @@ $contenu = trim($_POST['contenu']);
 
 <!-- NAVBAR -->
 <nav class="navbar">
-    <div class="logo">🎓 Espace Étudiant</div>
+    <div class="logo"> Espace Étudiant</div>
     <ul>
-        <li><a href="index.php">🏠 Dashboard</a></li>
-        <li><a href="publications.php">📝 Publications</a></li>
-        <li><a href="profil.php">👤 Profil</a></li>
-        <li><a href="deconnexion.php">🚪 Déconnexion</a></li>
+        <li><a href="index.php"> Dashboard</a></li>
+        <li><a href="publications.php"> Publications</a></li>
+        <li><a href="profil.php"> Profil</a></li>
+        <li><a href="deconnexion.php"> Déconnexion</a></li>
         <li>
             <button class="theme-toggle" id="toggleTheme">
-                🌙 Thème sombre
+                 Thème sombre
             </button>
         </li>
     </ul>
@@ -115,7 +115,7 @@ $contenu = trim($_POST['contenu']);
     <?php endif; ?>
 
     <div class="card">
-        <h2>✏️ Modifier la Publication</h2>
+        <h2> Modifier la Publication</h2>
 
         <form method="POST" 
               action="edit_publication.php?id=<?= $id_publication ?>">
@@ -136,10 +136,10 @@ $contenu = trim($_POST['contenu']);
             <div style="display:flex; gap:15px;">
                 <button type="submit" name="modifier_pub"
                         class="btn btn-primary">
-                    💾 Enregistrer les modifications
+                     Enregistrer les modifications
                 </button>
                 <a href="publications.php" class="btn btn-secondary">
-                    ❌ Annuler
+                     Annuler
                 </a>
             </div>
 
@@ -162,7 +162,7 @@ const themeSauvegarde = localStorage.getItem('theme');
 
 if (themeSauvegarde === 'dark') {
     document.body.classList.add('dark');
-    toggleBtn.textContent = '☀️ Thème clair';
+    toggleBtn.textContent = ' Thème clair';
 }
 
 // Gestion du clic — addEventListener vu Section IV.4 du cours
@@ -174,11 +174,11 @@ toggleBtn.addEventListener('click', function() {
     if (document.body.classList.contains('dark')) {
         // Passer en mode sombre
         localStorage.setItem('theme', 'dark');
-        toggleBtn.textContent = '☀️ Thème clair';
+        toggleBtn.textContent = ' Thème clair';
     } else {
         // Passer en mode clair
         localStorage.setItem('theme', 'light');
-        toggleBtn.textContent = '🌙 Thème sombre';
+        toggleBtn.textContent = ' Thème sombre';
     }
 });
 </script>
